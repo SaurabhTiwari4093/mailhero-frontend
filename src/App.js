@@ -15,66 +15,82 @@ export default function App() {
 
   const sandMail = async (e) => {
     e.preventDefault();
-    setBackdropOpen(true);
-    try {
-      for (var i = 0; i < jsonData.length;) {
-        const receiver = jsonData[i];
-        const bodyHTMLWithNameReplaced = bodyHTML.replaceAll("{Name}", receiver.Name);
-        const bodyHTMLWithBreakTagAdded = bodyHTMLWithNameReplaced.replaceAll("\n", "<br>");
-        const formData = {
-          senderEmail: email,
-          appPassword: password,
-          subject: subject,
-          bodyHTML: bodyHTMLWithBreakTagAdded,
-          receiverName: receiver.Name,
-          receiverEmail: receiver.Email,
-        }
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData)
-        }
-        const url = `https://mailhero.azurewebsites.net/api/sendMail`;
-        await fetch(url, requestOptions)
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.status === 200) {
-              setSendResponse(i + 1 + " : " + data.message);
-              i++;
-            }
-            else {
-              swal({
-                title: "Some error occured",
-                text: data.message,
-                icon: "error",
-              }).then(() => {
-                setBackdropOpen(false);
-                setSendResponse('Please wait');
-                return
-              });
-            }
-          })
-      }
+    if (fileName === 'Header of email column must be Email and name column must be Name in excel sheet') {
       swal({
-        title: "All mail sent successfully",
-        icon: "success",
-      }).then(() => {
-        setBackdropOpen(false)
-        setSendResponse('Please wait');
+        title: "Excel sheet not found",
+        text: "Please upload excel sheet",
+        icon: "info",
       })
     }
-    catch (error) {
+    else if(jsonData.length===0 || jsonData[0].Name===undefined || jsonData[0].Email===undefined){
       swal({
-        title: "Some error occured",
-        text: error,
-        icon: "error",
-      }).then(() => {
-        setBackdropOpen(false);
-        setSendResponse('Please wait');
-        return
-      });
+        title: "Name and Email not found",
+        text: "Header of column must be Name and Email.",
+        icon: "info",
+      })
+    }
+    else {
+      setBackdropOpen(true);
+      try {
+        for (var i = 0; i < jsonData.length;) {
+          const receiver = jsonData[i];
+          const bodyHTMLWithNameReplaced = bodyHTML.replaceAll("{Name}", receiver.Name);
+          const bodyHTMLWithBreakTagAdded = bodyHTMLWithNameReplaced.replaceAll("\n", "<br>");
+          const formData = {
+            senderEmail: email,
+            appPassword: password,
+            subject: subject,
+            bodyHTML: bodyHTMLWithBreakTagAdded,
+            receiverName: receiver.Name,
+            receiverEmail: receiver.Email,
+          }
+          const requestOptions = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData)
+          }
+          const url = `https://mailhero.azurewebsites.net/api/sendMail`;
+          await fetch(url, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === 200) {
+                setSendResponse(i + 1 + " : " + data.message);
+                i++;
+              }
+              else {
+                swal({
+                  title: "Some error occured",
+                  text: data.message,
+                  icon: "error",
+                }).then(() => {
+                  setBackdropOpen(false);
+                  setSendResponse('Please wait');
+                  return
+                });
+              }
+            })
+        }
+        swal({
+          title: "All mail sent successfully",
+          icon: "success",
+        }).then(() => {
+          setBackdropOpen(false)
+          setSendResponse('Please wait');
+        })
+      }
+      catch (error) {
+        swal({
+          title: "Some error occured",
+          text: error,
+          icon: "error",
+        }).then(() => {
+          setBackdropOpen(false);
+          setSendResponse('Please wait');
+          return
+        });
+      }
     }
   }
 
