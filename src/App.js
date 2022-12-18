@@ -36,7 +36,7 @@ export default function App() {
           },
           body: JSON.stringify(formData)
         }
-        const url = `http://localhost:3000/api/sendMail`;
+        const url = `https://mailhero.azurewebsites.net/api/sendMail`;
         await fetch(url, requestOptions)
           .then((response) => response.json())
           .then((data) => {
