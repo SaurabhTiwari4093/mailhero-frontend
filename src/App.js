@@ -31,13 +31,19 @@ export default function App() {
       try {
         for (var i = 0; ((i < jsonData.length) || runApiCall); i++) {
           const receiver = jsonData[i];
-          const bodyHTMLWithNameReplaced = bodyHTML.replaceAll("{Name}", receiver.Name);
-          const bodyHTMLWithBreakTagAdded = bodyHTMLWithNameReplaced.replaceAll("\n", "<br>");
+          var modifiedBodyHTML = bodyHTML;
+          try {
+            modifiedBodyHTML = modifiedBodyHTML.replaceAll("\n", "<br>");
+            modifiedBodyHTML = modifiedBodyHTML.replaceAll("{Name}", receiver.Name);
+          }
+          catch (err) {
+            console.log(err);
+          }
           const formData = {
             senderEmail: email,
             appPassword: password,
             subject: subject,
-            bodyHTML: bodyHTMLWithBreakTagAdded,
+            bodyHTML: modifiedBodyHTML,
             receiverEmail: receiver.Email,
           }
           const requestOptions = {
@@ -47,11 +53,10 @@ export default function App() {
             },
             body: JSON.stringify(formData)
           }
-          const url = `https://mailhero.azurewebsites.net/api/sendMail`;
+          const url = 'https://mailhero.azurewebsites.net/api/sendMail';
           await fetch(url, requestOptions)
             .then((response) => response.json())
             .then((data) => {
-              console.log(data)
               if (data.status === 200) {
                 setSendResponse(i + 1 + " : " + data.message);
               }
@@ -62,14 +67,15 @@ export default function App() {
                   text: data.message,
                   icon: "info",
                 }).then(() => {
-                  setBackdropOpen(false);
-                });
+                  setBackdropOpen(false)
+                })
               }
             })
         }
         if (i === jsonData.length) {
           swal({
-            title: "All mail sent successfully",
+            title: "Hurrah!",
+            text: "All mail sent successfully",
             icon: "success",
           }).then(() => {
             setBackdropOpen(false)
@@ -77,13 +83,7 @@ export default function App() {
         }
       }
       catch (error) {
-        swal({
-          title: "Some error occured",
-          text: error,
-          icon: "error",
-        }).then(() => {
-          setBackdropOpen(false);
-        });
+        console.log(error);
       }
     }
   }
