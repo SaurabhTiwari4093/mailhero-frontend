@@ -13,7 +13,6 @@ export default function App() {
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [sendResponse, setSendResponse] = useState('Please wait');
-  const [runApiCall, setRunApiCall] = useState(true)
 
   const sandMail = async (e) => {
     e.preventDefault();
@@ -26,10 +25,10 @@ export default function App() {
     }
     else {
       setBackdropOpen(true);
-      setRunApiCall(true);
+      var runApiCall = true;
       setSendResponse('Please wait');
       try {
-        for (var i = 0; ((i < jsonData.length) || runApiCall); i++) {
+        for (var i = 0; ((i < jsonData.length) && runApiCall);) {
           const receiver = jsonData[i];
           var modifiedBodyHTML = bodyHTML;
           try {
@@ -59,26 +58,25 @@ export default function App() {
             .then((data) => {
               if (data.status === 200) {
                 setSendResponse(i + 1 + " : " + data.message);
+                i++
               }
               else {
-                setRunApiCall(false)
+                runApiCall = false;
+                setBackdropOpen(false);
                 swal({
                   title: "Something went wrong",
                   text: data.message,
                   icon: "info",
-                }).then(() => {
-                  setBackdropOpen(false)
-                })
+                });
               }
             })
         }
-        if (i === jsonData.length) {
+        if (i === jsonData.length && runApiCall) {
+          setBackdropOpen(false)
           swal({
             title: "Hurrah!",
             text: "All mail sent successfully",
             icon: "success",
-          }).then(() => {
-            setBackdropOpen(false)
           })
         }
       }
