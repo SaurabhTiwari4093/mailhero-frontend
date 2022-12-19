@@ -139,7 +139,7 @@ export default function App() {
         <form onSubmit={sandMail}>
           <Card sx={{ p: 2 }}>
             <TextField label="Your gamil address" type="email" placeholder='xyz@gmail.com' fullWidth required sx={{ mb: 2 }} value={email} onChange={(e) => setEmail(e.target.value)} />
-            <TextField label="App password" placeholder='Google Account >> Security >> App Passwords >> Generate' fullWidth required sx={{ mb: 2 }} value={password} onChange={(e) => setPassword(e.target.value)} />
+            <TextField label="App password" placeholder='Google Account >> Security >> 2-Step Verification >> App Passwords >> Generate' fullWidth required sx={{ mb: 2 }} value={password} onChange={(e) => setPassword(e.target.value)} />
             <TextField label="Subject of email" placeholder='Be clear and specific about the topic of the email' fullWidth required sx={{ mb: 2 }} value={subject} onChange={(e) => setSubject(e.target.value)} />
             <TextField label="Body of email" placeholder='In place of name of receiver write {Name} . Example: Dear Ram, => Dear {Name},' fullWidth required multiline minRows={8} sx={{ mb: 2 }} value={bodyHTML} onChange={(e) => setBodyHTML(e.target.value)} />
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
