@@ -35,7 +35,6 @@ export default function App() {
             appPassword: password,
             subject: subject,
             bodyHTML: bodyHTMLWithBreakTagAdded,
-            receiverName: receiver.Name,
             receiverEmail: receiver.Email,
           }
           const requestOptions = {
