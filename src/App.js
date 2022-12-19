@@ -11,21 +11,15 @@ export default function App() {
   const [fileName, setFileName] = useState('Header of email column must be Email and name column must be Name in excel sheet');
   const [jsonData, setJsonData] = useState('');
   const [backdropOpen, setBackdropOpen] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [sendResponse, setSendResponse] = useState('Please wait');
 
   const sandMail = async (e) => {
     e.preventDefault();
-    if (fileName === 'Header of email column must be Email and name column must be Name in excel sheet') {
+    if (disabled) {
       swal({
         title: "Excel sheet not found",
         text: "Please upload excel sheet",
-        icon: "info",
-      })
-    }
-    else if(jsonData.length===0 || jsonData[0].Name===undefined || jsonData[0].Email===undefined){
-      swal({
-        title: "Name and Email not found",
-        text: "Header of column must be Name and Email.",
         icon: "info",
       })
     }
@@ -98,7 +92,6 @@ export default function App() {
     e.preventDefault();
     var file = e.target.files[0];
     e.target.value = null;
-    setFileName(file.name);
     var reader = new FileReader();
     reader.onload = function (e) {
       var data = e.target.result;
@@ -106,7 +99,21 @@ export default function App() {
       const wsname = readedData.SheetNames[0];
       const ws = readedData.Sheets[wsname];
       const dataParse = XLSX.utils.sheet_to_json(ws, { header: 0 });
-      setJsonData(dataParse);
+      if (dataParse.length === 0 || dataParse[0].Email === undefined) {
+        swal({
+          title: "Email column not found",
+          text: "Header of column containing email must be Email.",
+          icon: "info",
+        })
+        setDisabled(true);
+        setFileName('Header of email column must be Email and name column must be Name in excel sheet');
+        setJsonData('');
+      }
+      else {
+        setJsonData(dataParse);
+        setFileName(file.name);
+        setDisabled(false);
+      }
     };
     reader.readAsBinaryString(file);
   }
@@ -137,7 +144,7 @@ export default function App() {
             <TextField label="Subject of email" placeholder='Be clear and specific about the topic of the email' fullWidth required sx={{ mb: 2 }} value={subject} onChange={(e) => setSubject(e.target.value)} />
             <TextField label="Body of email" placeholder='In place of name of receiver write {Name} . Example: Dear Ram, => Dear {Name},' fullWidth required multiline minRows={8} sx={{ mb: 2 }} value={bodyHTML} onChange={(e) => setBodyHTML(e.target.value)} />
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <TextField label="Excel file with email and name of receiver" value={fileName} fullWidth required />
+              <TextField label="Excel file with email of receivers" value={fileName} fullWidth disabled={disabled} />
               <Button variant="outlined" component="label" sx={{ ml: 1, height: 54, textAlign: "center", width: 150 }}>
                 Upload Excel
                 <input type="file" onChange={(e) => handleUpload(e)} accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden />
