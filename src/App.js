@@ -13,6 +13,7 @@ export default function App() {
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [sendResponse, setSendResponse] = useState('Please wait');
+  const [runApiCall, setRunApiCall] = useState(true)
 
   const sandMail = async (e) => {
     e.preventDefault();
@@ -25,8 +26,10 @@ export default function App() {
     }
     else {
       setBackdropOpen(true);
+      setRunApiCall(true);
+      setSendResponse('Please wait');
       try {
-        for (var i = 0; i < jsonData.length;) {
+        for (var i = 0; ((i < jsonData.length) || runApiCall); i++) {
           const receiver = jsonData[i];
           const bodyHTMLWithNameReplaced = bodyHTML.replaceAll("{Name}", receiver.Name);
           const bodyHTMLWithBreakTagAdded = bodyHTMLWithNameReplaced.replaceAll("\n", "<br>");
@@ -48,30 +51,30 @@ export default function App() {
           await fetch(url, requestOptions)
             .then((response) => response.json())
             .then((data) => {
+              console.log(data)
               if (data.status === 200) {
                 setSendResponse(i + 1 + " : " + data.message);
-                i++;
               }
               else {
+                setRunApiCall(false)
                 swal({
-                  title: "Some error occured",
+                  title: "Something went wrong",
                   text: data.message,
-                  icon: "error",
+                  icon: "info",
                 }).then(() => {
                   setBackdropOpen(false);
-                  setSendResponse('Please wait');
-                  return
                 });
               }
             })
         }
-        swal({
-          title: "All mail sent successfully",
-          icon: "success",
-        }).then(() => {
-          setBackdropOpen(false)
-          setSendResponse('Please wait');
-        })
+        if (i === jsonData.length) {
+          swal({
+            title: "All mail sent successfully",
+            icon: "success",
+          }).then(() => {
+            setBackdropOpen(false)
+          })
+        }
       }
       catch (error) {
         swal({
@@ -80,8 +83,6 @@ export default function App() {
           icon: "error",
         }).then(() => {
           setBackdropOpen(false);
-          setSendResponse('Please wait');
-          return
         });
       }
     }
@@ -143,7 +144,7 @@ export default function App() {
             <TextField label="Subject of email" placeholder='Be clear and specific about the topic of the email' fullWidth required sx={{ mb: 2 }} value={subject} onChange={(e) => setSubject(e.target.value)} />
             <TextField label="Body of email" placeholder='In place of name of receiver write {Name} . Example: Dear Ram, => Dear {Name},' fullWidth required multiline minRows={8} sx={{ mb: 2 }} value={bodyHTML} onChange={(e) => setBodyHTML(e.target.value)} />
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <TextField label="Excel file with email of receivers" value={fileName} fullWidth disabled={disabled} inputProps={{ readOnly: true }}/>
+              <TextField label="Excel file with email of receivers" value={fileName} fullWidth disabled={disabled} inputProps={{ readOnly: true }} />
               <Button variant="outlined" component="label" sx={{ ml: 1, height: 54, textAlign: "center", width: 150 }}>
                 Upload Excel
                 <input type="file" onChange={(e) => handleUpload(e)} accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden />
