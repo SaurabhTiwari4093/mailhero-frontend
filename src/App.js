@@ -14,6 +14,17 @@ export default function App() {
   const [disabled, setDisabled] = useState(true);
   const [sendResponse, setSendResponse] = useState('Please wait');
 
+  const timer = ms => new Promise(res => setTimeout(res, ms))
+
+  function ValidateEmail(input) {
+    var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (input.match(validRegex)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   const sandMail = async (e) => {
     e.preventDefault();
     if (disabled) {
@@ -31,6 +42,11 @@ export default function App() {
         for (var i = 0; ((i < jsonData.length) && runApiCall);) {
           const receiver = jsonData[i];
           var modifiedBodyHTML = bodyHTML;
+          if (!ValidateEmail(receiver.Email)) {
+            await timer(100);
+            i++;
+            continue;
+          }
           try {
             modifiedBodyHTML = modifiedBodyHTML.replaceAll("\n", "<br>");
             modifiedBodyHTML = modifiedBodyHTML.replaceAll("{Name}", receiver.Name);
@@ -52,18 +68,19 @@ export default function App() {
             },
             body: JSON.stringify(formData)
           }
-          const url = 'http://mailhero-gmail-env.eba-mtps6pup.ap-south-1.elasticbeanstalk.com/';
+          const url = 'http://mailhero-gmail-env.eba-mtps6pup.ap-south-1.elasticbeanstalk.com/api/sendMail';
           await fetch(url, requestOptions)
             .then((response) => response.json())
-            .then((data) => {
+            .then(async (data) => {
+              console.log(data);
               if (data.status === 200) {
                 setSendResponse(i + 1 + " : " + data.message);
+                await timer(100);
                 i++
               }
               else {
                 runApiCall = false;
                 setBackdropOpen(false);
-                console.log(data);
                 swal({
                   title: `Something went wrong with ${receiver.Email}`,
                   text: data.message,
