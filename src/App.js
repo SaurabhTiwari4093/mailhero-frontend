@@ -34,11 +34,6 @@ export default function App() {
           try {
             modifiedBodyHTML = modifiedBodyHTML.replaceAll("\n", "<br>");
             modifiedBodyHTML = modifiedBodyHTML.replaceAll("{Name}", receiver.Name);
-            modifiedBodyHTML = modifiedBodyHTML.replaceAll("{Group}", receiver.Group);
-            modifiedBodyHTML = modifiedBodyHTML.replaceAll("{Link}", receiver.Link);
-            modifiedBodyHTML = modifiedBodyHTML.replaceAll("{SuperMentor}", receiver.SuperMentor);
-            modifiedBodyHTML = modifiedBodyHTML.replaceAll("{Mentor}", receiver.Mentor);
-            modifiedBodyHTML = modifiedBodyHTML.replaceAll("{Contact}", receiver.Contact);
           }
           catch (err) {
             console.log(err);
