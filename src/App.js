@@ -52,7 +52,7 @@ export default function App() {
             },
             body: JSON.stringify(formData)
           }
-          const url = 'https://mailhero.azurewebsites.net/api/sendMail';
+          const url = 'http://mailhero-gmail-env.eba-mtps6pup.ap-south-1.elasticbeanstalk.com/';
           await fetch(url, requestOptions)
             .then((response) => response.json())
             .then((data) => {
@@ -63,8 +63,9 @@ export default function App() {
               else {
                 runApiCall = false;
                 setBackdropOpen(false);
+                console.log(data);
                 swal({
-                  title: "Something went wrong",
+                  title: `Something went wrong with ${receiver.Email}`,
                   text: data.message,
                   icon: "info",
                 });
