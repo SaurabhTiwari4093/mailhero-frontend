@@ -68,7 +68,7 @@ export default function App() {
             },
             body: JSON.stringify(formData)
           }
-          const url = 'http://mailhero-gmail-env.eba-mtps6pup.ap-south-1.elasticbeanstalk.com/api/sendMail';
+          const url = 'https://mailhero.render.com/api/sendMail';
           await fetch(url, requestOptions)
             .then((response) => response.json())
             .then(async (data) => {
