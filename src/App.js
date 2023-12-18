@@ -68,7 +68,7 @@ export default function App() {
             },
             body: JSON.stringify(formData)
           }
-          const url = 'https://mailhero.onrender.com/api/sendMail';
+          const url = 'https://mailhero.saurabh-tiwari.tech/api/sendMail';
           await fetch(url, requestOptions)
             .then((response) => response.json())
             .then(async (data) => {
